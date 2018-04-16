@@ -15,17 +15,17 @@ def process(frame, remote=True):
 
     px_pink, mask_pink = get_pixels(image_hsv, colors.pink)
     px_green, mask_green = get_pixels(image_hsv, colors.green)
-    px_orange, mask_orange = get_pixels(image_hsv, colors.orange)
+    px_orange, mask_orange = get_pixels(image_hsv, colors.blue)
 
-    if px_pink > px_green and px_pink > px_orange:
+    if px_pink > max(px_green, px_orange):
         mask = mask_pink
         detected_color = colors.PINK
-    elif px_green > px_pink and px_green > px_orange:
+    elif px_green > max(px_orange, px_pink):
         mask = mask_green
         detected_color = colors.GREEN
-    elif px_orange > px_green and px_orange > px_pink:
+    elif px_orange > max(px_green, px_pink):
         mask = mask_orange
-        detected_color = colors.ORANGE
+        detected_color = colors.BLUE
     else:
         mask = mask_pink
         detected_color = colors.NOCOLOR
