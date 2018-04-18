@@ -7,10 +7,10 @@ import time
 GPIO.setmode(GPIO.BOARD)
 
 # set GPIO Pins
-GPIO_Ain1 = 11
+GPIO_Ain1 = 11 # left
 GPIO_Ain2 = 13
 GPIO_Apwm = 15
-GPIO_Bin1 = 29
+GPIO_Bin1 = 29 # right
 GPIO_Bin2 = 31
 GPIO_Bpwm = 33
 
@@ -29,7 +29,7 @@ GPIO.output(GPIO_Bin1, False)
 GPIO.output(GPIO_Bin2, False)
 
 # Set PWM parameters
-pwm_frequency = 50
+pwm_frequency = 100
 
 # Create the PWM instances
 pwmA = GPIO.PWM(GPIO_Apwm, pwm_frequency)
@@ -37,56 +37,42 @@ pwmB = GPIO.PWM(GPIO_Bpwm, pwm_frequency)
 
 # Set the duty cycle (between 0 and 100)
 # The duty cycle determines the speed of the wheels
-pwmA.start(100)
-pwmB.start(100)
+pwmA.start(50)
+pwmB.start(50)
 
 
 def normalize(speed):
-    return speed, speed - 10
+    return speed, speed - 5
 
-def forward(speed):
-    GPIO.output(GPIO_Ain1, True)
-    GPIO.output(GPIO_Ain2, False)
-    GPIO.output(GPIO_Bin1, True)
-    GPIO.output(GPIO_Bin2, False)
+def forward(speed, t):
+    GPIO.output(GPIO_Ain1, False)
+    GPIO.output(GPIO_Ain2, True)
+    GPIO.output(GPIO_Bin1, False)
+    GPIO.output(GPIO_Bin2, True)
 
     lSpeed, rSpeed = normalize(speed)
     pwmA.ChangeDutyCycle(rSpeed)
     pwmB.ChangeDutyCycle(lSpeed)
     print ("FORWARD {} speed".format(speed))
-    time.sleep(1)
+    time.sleep(t)
     stop()
 
 
-def backwards(speed):
-    GPIO.output(GPIO_Ain1, False)
-    GPIO.output(GPIO_Ain2, True)
-    GPIO.output(GPIO_Bin1, False)
-    GPIO.output(GPIO_Bin2, True)
+def backwards(speed, t):
+    GPIO.output(GPIO_Ain1, True)
+    GPIO.output(GPIO_Ain2, False)
+    GPIO.output(GPIO_Bin1, True)
+    GPIO.output(GPIO_Bin2, False)
 
     lSpeed, rSpeed = normalize(speed)    
     pwmA.ChangeDutyCycle(rSpeed)
     pwmB.ChangeDutyCycle(lSpeed)
     print ("BACKWARDS {} speed".format(speed))
-    time.sleep(1)
+    time.sleep(t)
     stop()
 
 
-def right(speed):
-    GPIO.output(GPIO_Ain1, True)
-    GPIO.output(GPIO_Ain2, False)
-    GPIO.output(GPIO_Bin1, False)
-    GPIO.output(GPIO_Bin2, True)
-
-    lSpeed, rSpeed = normalize(speed)    
-    pwmA.ChangeDutyCycle(rSpeed)
-    pwmB.ChangeDutyCycle(lSpeed)
-    print ("RIGHT {} speed".format(speed))
-    time.sleep(0.5)
-    stop()
-
-
-def left(speed):
+def right(speed, t):
     GPIO.output(GPIO_Ain1, False)
     GPIO.output(GPIO_Ain2, True)
     GPIO.output(GPIO_Bin1, True)
@@ -95,8 +81,22 @@ def left(speed):
     lSpeed, rSpeed = normalize(speed)    
     pwmA.ChangeDutyCycle(rSpeed)
     pwmB.ChangeDutyCycle(lSpeed)
+    print ("RIGHT {} speed".format(speed))
+    time.sleep(t)
+    stop()
+
+
+def left(speed, t):
+    GPIO.output(GPIO_Ain1, True)
+    GPIO.output(GPIO_Ain2, False)
+    GPIO.output(GPIO_Bin1, False)
+    GPIO.output(GPIO_Bin2, True)
+
+    lSpeed, rSpeed = normalize(speed)    
+    pwmA.ChangeDutyCycle(rSpeed)
+    pwmB.ChangeDutyCycle(lSpeed)
     print ("LEFT {} speed".format(speed))
-    time.sleep(0.5)
+    time.sleep(t)
     stop()
 
 
