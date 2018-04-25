@@ -5,14 +5,14 @@ import picamera.array  # This needs to be imported explicitly
 import time
 import frameprocessor
 import colors
-import chases
+import chassis
 
 
 def cleanup():
     print("Cleaningup")
     cv2.destroyAllWindows()
     camera.close()
-    chases.cleanup()
+    chassis.cleanup()
 
 
 remote = True
@@ -25,12 +25,20 @@ camera.framerate = 32
 
 cXStart = 220
 cXEnd = 420
+
+cYStart = 460
+cYEnd = 480
+
 LASTCOLOR = ""
 
 forwardSpeed = 50
-turnSpeed = 60
 forwardTime = 0.5
+
+turnSpeed = 60
 turnTime = 0.5
+
+balanceSpeed = 40
+balanceTurn = 0.2
 
 # camera.vflip = True
 
@@ -39,6 +47,14 @@ rawframe = picamera.array.PiRGBArray(camera, size=(640, 480))
 
 # allow the camera to warm up
 time.sleep(0.1)
+
+def execute(cX, cY):
+    if cXEnd >= cX >= cXStart:
+        chassis.forward(forwardSpeed, forwardTime)
+    elif cXEnd < cX:
+        chassis.right(balanceSpeed, balanceTurn)
+    elif cXStart > cX:
+        chassis.left(balanceSpeed, balanceTurn)
 
 if __name__ == "__main__":
     try:
@@ -51,32 +67,26 @@ if __name__ == "__main__":
             image = frame.array
             color, cX, cY = frameprocessor.process(image, remote)
             print(color.upper())
-            if color != colors.NOCOLOR:
-                if color == colors.GREEN:
-                    chases.forward(forwardSpeed, forwardTime)
-                elif color == colors.BLUE:
-                    chases.forward(forwardSpeed, 1.5)
-                    chases.right(turnSpeed + 20, turnTime)
-                    chases.forward(forwardSpeed, 0.7)                    
-                elif color == colors.PINK:
-                    if cXEnd > cX > cXStart:
-                        pass
-                    chases.forward(forwardSpeed, 1)
-                    chases.left(turnSpeed, turnTime)
-                    chases.forward(forwardSpeed, 0.7)                    
-                LASTCOLOR = color
+            if color == colors.NOCOLOR:
+                color = LASTCOLOR
 
-            elif color == colors.NOCOLOR:
-                if LASTCOLOR == colors.GREEN:
-                    chases.forward(forwardSpeed, forwardTime)
-                elif LASTCOLOR == colors.BLUE:
-                    chases.forward(forwardSpeed, forwardTime)
-                    chases.right(turnSpeed, turnTime)
-                elif LASTCOLOR == colors.PINK:
-                    chases.forward(forwardSpeed, forwardTime)
-                    chases.left(turnSpeed, turnTime)
+            if color == colors.GREEN:
+                execute(cX, cY)
 
-            cv2.waitKey(1)
+            elif color == colors.BLUE:
+                if cYEnd >= cY >= cYStart:
+                    chassis.forward(forwardSpeed, forwardTime)
+                    chassis.right(turnSpeed, turnTime)
+                else:
+                    execute(cX, cY)
+
+            elif color == colors.PINK:
+                if cYEnd >= cY >= cYStart:
+                    chassis.forward(forwardSpeed, forwardTime)
+                    chassis.left(turnSpeed, turnTime)
+                else:
+                    execute(cX, cY)
+            LASTCOLOR = color
 
     except KeyboardInterrupt:
         cleanup()

@@ -1,7 +1,7 @@
 # Chases testing
 
 import curses
-import chases, lights
+import chassis, lights
 
 lights.setup()
 # chases.init()
@@ -20,13 +20,13 @@ if __name__ == "__main__":
             if char == ord('q'):
                 break
             elif char == curses.KEY_UP:
-                chases.forward(40)
+                chassis.forward(40)
             elif char == curses.KEY_DOWN:
-                chases.backwards(35)
+                chassis.backwards(35)
             elif char == curses.KEY_LEFT:
-                chases.left(60)
+                chassis.left(60)
             elif char == curses.KEY_RIGHT:
-                chases.right(60)
+                chassis.right(60)
     finally:
         curses.nocbreak()
         screen.keypad(0)
@@ -34,4 +34,3 @@ if __name__ == "__main__":
         curses.endwin()
 
         lights.cleanup()
-        chases.cleanup()
