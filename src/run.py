@@ -13,20 +13,20 @@ screen.keypad(True)
 
 if __name__ == "__main__":
     try:
-        lights.blink(3)
+        lights.blink(1)
         lights.on()
         while True:
             char = screen.getch()
             if char == ord('q'):
                 break
             elif char == curses.KEY_UP:
-                chassis.forward(40)
+                chassis.forward(50, 1)
             elif char == curses.KEY_DOWN:
-                chassis.backwards(35)
+                print("DOWN")
             elif char == curses.KEY_LEFT:
-                chassis.left(60)
+                chassis.left(60, 0.9)
             elif char == curses.KEY_RIGHT:
-                chassis.right(60)
+                chassis.right(60, 0.9)
     finally:
         curses.nocbreak()
         screen.keypad(0)
